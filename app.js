@@ -1,3 +1,4 @@
+require('dotenv').config();
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -24,7 +25,10 @@ const mongoose = require('mongoose');
 
 mongoose.set('strictQuery', false);
 
-const mongoDB = 'mongodb://localhost:27017/libraryDatabase';
+const userName = encodeURIComponent(process.env.USER || '');
+const password = encodeURIComponent(process.env.PASSWORD || '');
+
+const mongoDB = `mongodb+srv://${userName}:${password}@cluster0.hjxurt4.mongodb.net/bookify_database?retryWrites=true&w=majority&appName=Cluster0`;
 
 main().catch((err) => console.log(err));
 
