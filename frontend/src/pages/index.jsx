@@ -1,4 +1,4 @@
-import libraryImg from '../src/assets/libraryImg.jpg';
+import libraryImg from '../assets/libraryImg.jpg';
 
 const Index = () => {
 	return (
