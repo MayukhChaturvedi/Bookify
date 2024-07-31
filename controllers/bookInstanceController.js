@@ -2,7 +2,11 @@ const BookInstance = require('../models/bookInstance');
 const asyncHandler = require('express-async-handler');
 
 exports.bookinstance_list = asyncHandler(async (req, res, next) => {
-	const allBookInstances = await BookInstance.find().populate('book').exec();
+	const allBookInstances = await BookInstance.find()
+		.populate('book')
+		.skip(((req.query.skip || 1) - 1) * 10)
+		.limit(10)
+		.exec();
 	res.json(allBookInstances);
 });
 

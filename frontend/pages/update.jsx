@@ -91,7 +91,7 @@ export default function Update() {
 
 	return (
 		<form
-			className="rounded-md bg-slate-50 m-2 p-5"
+			className="rounded-xl font-serif text-lg font-light bg-slate-50 my-5 mx-auto p-5 min-w-fit max-w-prose flex flex-col items-center"
 			onSubmit={(e) => handleSubmit(e)}
 		>
 			<FormGenerate
@@ -100,8 +100,12 @@ export default function Update() {
 				handleGenreChange={handleGenreChange}
 				data={data}
 				extraData={extraData}
+				status={status}
 			/>
-			<button type="submit" className="rounded-full border-2 p-2 bg-slate-400">
+			<button
+				type="submit"
+				className="rounded-full border-2 py-2 px-4 bg-green-500 text-slate-50"
+			>
 				Submit
 			</button>
 			<h3 id="submitMessage"></h3>

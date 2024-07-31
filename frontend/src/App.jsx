@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
-import './App.css';
 import NoPage from '../pages/noPage.jsx';
 import Index from '../pages/index.jsx';
 import DisplayOne from '../pages/displayOne.jsx';
@@ -18,7 +17,6 @@ const router = createBrowserRouter([
 		path: '/:type',
 		element: <DisplayMany />,
 	},
-	//books
 	{
 		path: '/:type/create',
 		element: <Create />,

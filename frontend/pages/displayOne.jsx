@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import GetItem from './getItem';
 import { useParams } from 'react-router-dom';
+import NoPage from './noPage';
+import { BsFillPencilFill, BsFillTrash3Fill } from 'react-icons/bs';
+import { useNavigate } from 'react-router-dom';
 
 export default function DisplayOne() {
 	const [json, setJson] = useState(null);
@@ -26,7 +29,7 @@ export default function DisplayOne() {
 			fetchData();
 	}, [id, type]);
 
-	console.log(id);
+	const navigate = useNavigate();
 
 	if (type === 'books') {
 		if (error) {
@@ -40,16 +43,16 @@ export default function DisplayOne() {
 		return (
 			<div
 				key={json._id}
-				className="w-full h-full bg-slate-100 rounded-md p-5 flex"
+				className="max-w-full bg-slate-100 rounded-md m-5 p-5 flex"
 			>
 				<img
 					key={json._id + ' img'}
 					className="flex-auto w-full max-w-24 border-r-0 m-2"
 					alt={json.title}
 				/>
-				<div className="flex flex-col w-full items-center">
+				<div className="flex flex-col w-full items-center h-full">
 					<h2
-						className="m-b-2 text-3xl underline font-bold"
+						className="m-b-4 text-3xl underline font-bold"
 						key={json._id + ' h2'}
 					>
 						{json.title}
@@ -79,6 +82,20 @@ export default function DisplayOne() {
 						Summary:&nbsp;{json.summary}
 					</p>
 				</div>
+				<div className="flex flex-col justify-evenly">
+					<button
+						onClick={() => navigate('update')}
+						className="m-3 hover:text-orange-500"
+					>
+						<BsFillPencilFill />
+					</button>
+					<button
+						onClick={() => navigate('delete')}
+						className="m-3 hover:text-orange-500"
+					>
+						<BsFillTrash3Fill />
+					</button>
+				</div>
 			</div>
 		);
 	} else if (type === 'authors') {
@@ -91,7 +108,7 @@ export default function DisplayOne() {
 		}
 
 		return (
-			<div className="w-full h-full bg-slate-100 rounded-md p-5 flex">
+			<div className="max-w-full bg-slate-100 rounded-md m-5 p-5 flex">
 				<img
 					alt={json.name}
 					className="flex-auto w-full max-w-24 border-r-0 m-2"
@@ -105,6 +122,20 @@ export default function DisplayOne() {
 						<br />
 						Date of Death: {json.date_of_death || 'NA'}
 					</p>
+				</div>
+				<div className="flex flex-col justify-evenly">
+					<button
+						onClick={() => navigate('update')}
+						className="m-3 hover:text-orange-500"
+					>
+						<BsFillPencilFill />
+					</button>
+					<button
+						onClick={() => navigate('delete')}
+						className="m-3 hover:text-orange-500"
+					>
+						<BsFillTrash3Fill />
+					</button>
 				</div>
 			</div>
 		);
@@ -120,6 +151,20 @@ export default function DisplayOne() {
 		return (
 			<div key={json._id} className="genre">
 				<h2 key={json._id + ' h2'}>{json.name}</h2>
+				<div className="flex flex-col justify-evenly">
+					<button
+						onClick={() => navigate('update')}
+						className="m-3 hover:text-orange-500"
+					>
+						<BsFillPencilFill />
+					</button>
+					<button
+						onClick={() => navigate('delete')}
+						className="m-3 hover:text-orange-500"
+					>
+						<BsFillTrash3Fill />
+					</button>
+				</div>
 			</div>
 		);
 	} else if (type === 'bookinstances') {
@@ -132,7 +177,7 @@ export default function DisplayOne() {
 		}
 
 		return (
-			<div className="w-full h-full bg-slate-100 rounded-md p-5 flex">
+			<div className="max-w-full bg-slate-100 rounded-md m-5 p-5 flex">
 				<img
 					className="flex-auto w-full max-w-24 border-r-0 m-2"
 					key={json._id + ' img'}
@@ -164,9 +209,23 @@ export default function DisplayOne() {
 						Due back: <span className="font-sans">{json.due_back}</span>
 					</p>
 				</div>
+				<div className="flex flex-col justify-evenly">
+					<button
+						onClick={() => navigate('update')}
+						className="m-3 hover:text-orange-500"
+					>
+						<BsFillPencilFill />
+					</button>
+					<button
+						onClick={() => navigate('delete')}
+						className="m-3 hover:text-orange-500"
+					>
+						<BsFillTrash3Fill />
+					</button>
+				</div>
 			</div>
 		);
 	} else {
-		return <div className="error div">Invalid Type</div>;
+		return <NoPage />;
 	}
 }

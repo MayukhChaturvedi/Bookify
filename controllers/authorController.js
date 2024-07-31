@@ -3,7 +3,10 @@ const asyncHandler = require('express-async-handler');
 const Book = require('../models/book');
 
 exports.author_list = asyncHandler(async (req, res, next) => {
-	const allAuthors = await Author.find().sort({ family_name: 1 });
+	const allAuthors = await Author.find()
+		.sort({ family_name: 1 })
+		.skip(((req.query.skip || 1) - 1) * 10)
+		.limit(10);
 	res.json(allAuthors);
 });
 

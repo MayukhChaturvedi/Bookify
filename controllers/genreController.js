@@ -15,6 +15,8 @@ exports.genre_display = asyncHandler(async (req, res, next) => {
 exports.genre_create_post = asyncHandler(async (req, res, next) => {
 	const genreExists = await Genre.findOne({ name: req.body.name })
 		.collation({ locale: 'en', strength: 2 })
+		.skip(((req.query.skip || 1) - 1) * 10)
+		.limit(10)
 		.exec();
 
 	if (genreExists) {
