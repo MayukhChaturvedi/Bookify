@@ -2,6 +2,11 @@ const Author = require('../models/author');
 const asyncHandler = require('express-async-handler');
 const Book = require('../models/book');
 
+exports.author_count = asyncHandler(async (req, res, next) => {
+	const count = await Author.countDocuments({});
+	res.json(count);
+});
+
 exports.author_list = asyncHandler(async (req, res, next) => {
 	const allAuthors = await Author.find()
 		.sort({ family_name: 1 })

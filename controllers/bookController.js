@@ -2,15 +2,39 @@ const Book = require('../models/book');
 const asyncHandler = require('express-async-handler');
 const BookInstance = require('../models/bookInstance');
 
+exports.book_count = asyncHandler(async (req, res, next) => {
+	const filter = {};
+
+	if (req.query.author) {
+		filter.author = req.query.author;
+	}
+
+	if (req.query.genre) {
+		filter.genre = req.query.genre;
+	}
+
+	const count = await Book.countDocuments(filter);
+	res.json(count);
+});
+
 exports.book_list = asyncHandler(async (req, res, next) => {
-	const allBooks = await Book.find({}, 'title author summary')
+	const filter = {};
+
+	if (req.query.author) {
+		filter.author = req.query.author;
+	}
+
+	if (req.query.genre) {
+		filter.genre = req.query.genre;
+	}
+	const reqBooks = await Book.find(filter, 'title author summary')
 		.sort({ title: 1 })
-		.populate('author')
 		.skip(((req.query.skip || 1) - 1) * 10)
 		.limit(10)
+		.populate('author')
 		.exec();
 
-	res.json(allBooks);
+	res.json(reqBooks);
 });
 
 exports.book_display = asyncHandler(async (req, res, next) => {

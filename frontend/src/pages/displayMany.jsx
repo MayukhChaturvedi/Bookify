@@ -1,21 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import GetItem from './getItem';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import NoPage from './noPage';
+import bookLogo from '../assets/book.jpg';
+import authorLogo from '../assets/author.jpg';
 import { BsFillPencilFill, BsFillTrash3Fill } from 'react-icons/bs';
+import axios from 'axios';
+import {
+	FaChevronLeft,
+	FaChevronRight,
+	FaMagnifyingGlass,
+} from 'react-icons/fa6';
 
 export default function DisplayMany() {
 	const [json, setJson] = useState(null);
 	const [error, setError] = useState(null);
 	const [page, setPage] = useState(1);
+	const [searchParams] = useSearchParams();
+	const totalPages = useRef(null);
 
 	const navigate = useNavigate();
 	const { type } = useParams();
+	const authorId = searchParams.get('author') || '';
+	const genreId = searchParams.get('genre') || '';
+	const bookId = searchParams.get('book') || '';
+	let filter = '';
+	if (authorId) {
+		filter += 'author=' + authorId;
+	}
+	if (genreId) {
+		filter += 'genre=' + genreId;
+	}
+	if (bookId) {
+		filter += 'book=' + bookId;
+	}
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const data = await GetItem('multiple', type, page);
+				const res = await axios.get(
+					`http://localhost:3000/catalog/${type}/count/?${filter}`
+				);
+				totalPages.current = Math.ceil(res.data / 10);
+				const data = await GetItem('multiple', type, page, filter);
 				setJson(data);
 			} catch (err) {
 				setError(err);
@@ -29,15 +56,31 @@ export default function DisplayMany() {
 			type === 'bookinstances'
 		)
 			fetchData();
-	}, [type, page]);
+	}, [type, page, filter]);
 
 	if (type === 'books') {
 		if (error) {
-			return <div>Error occurred: {error.message}</div>;
+			return (
+				<div className="max-w-[60%] min-w-[50%] bg-slate-100 rounded-md p-10 my-auto mx-auto text-center text-xl font-mono">
+					Error occurred: {error.message}
+				</div>
+			);
 		}
 
 		if (!json) {
-			return <div>Loading...</div>;
+			return (
+				<div className="max-w-[60%] min-w-[50%] bg-slate-100 rounded-md p-10 my-auto mx-auto text-center text-xl font-mono">
+					Loading...
+				</div>
+			);
+		}
+
+		if (!json.length) {
+			return (
+				<div className="max-w-[60%] min-w-[50%] bg-slate-100 rounded-md p-10 my-auto mx-auto text-center text-xl font-mono">
+					No Books Found
+				</div>
+			);
 		}
 
 		return (
@@ -48,19 +91,24 @@ export default function DisplayMany() {
 				>
 					Add a Book
 				</button>
-				<div className="max-w-full bg-slate-100 rounded-md p-2 m-2">
+				<div className="max-w-[90%] min-w-[80%] bg-slate-100 rounded-md p-2 my-2 mx-auto">
 					{json.map((element) => (
-						<>
+						<Fragment key={element._id + 'frag'}>
 							<div
 								key={element._id}
 								onClick={() => navigate(`${element._id}`)}
-								className="rounded-md flex m-2 p-2 hover:bg-slate-400"
+								className="rounded-md flex m-2 p-2 hover:bg-slate-400 transform transition duration-300 hover:scale-105"
 							>
 								<img
+									key={element._id + 'img'}
+									src={bookLogo}
 									className="flex-none w-full max-w-24 border-r-0 m-2"
 									alt={element.title}
 								/>
-								<div className="flex flex-col w-full items-center">
+								<div
+									key={element._id + 'inDiv'}
+									className="flex flex-col w-full items-center"
+								>
 									<h2
 										key={element._id + ' h2'}
 										className="m-b-2 font-bold text-lg"
@@ -71,8 +119,12 @@ export default function DisplayMany() {
 										{element.summary}
 									</p>
 								</div>
-								<div className="flex flex-col justify-center">
+								<div
+									key={element._id + 'btns'}
+									className="flex flex-col justify-center"
+								>
 									<button
+										key={element._id + 'update'}
 										onClick={(e) => {
 											navigate(`${element._id}/update`);
 											e.stopPropagation();
@@ -82,6 +134,7 @@ export default function DisplayMany() {
 										<BsFillPencilFill />
 									</button>
 									<button
+										key={element._id + 'delete'}
 										onClick={(e) => {
 											navigate(`${element._id}/delete`);
 											e.stopPropagation();
@@ -90,12 +143,26 @@ export default function DisplayMany() {
 									>
 										<BsFillTrash3Fill />
 									</button>
+									<button
+										key={element._id + 'search'}
+										onClick={(e) => {
+											navigate(`/bookinstances/?book=${element._id}`);
+											e.stopPropagation();
+										}}
+										className="m-3 hover:text-orange-500"
+									>
+										<FaMagnifyingGlass />
+									</button>
 								</div>
 							</div>
-							<hr className="w-11/12 text-zinc-800 mx-auto" />
-						</>
+							<hr
+								key={element._id + 'hr'}
+								className="w-11/12 text-zinc-800 mx-auto"
+							/>
+						</Fragment>
 					))}
 				</div>
+				<Paginator />
 			</>
 		);
 	} else if (type === 'authors') {
@@ -114,19 +181,24 @@ export default function DisplayMany() {
 				>
 					Add an Author
 				</button>
-				<div className="max-w-full bg-slate-100 rounded-md p-2 m-2">
+				<div className="max-w-[90%] min-w-[80%] bg-slate-100 rounded-md p-2 my-2 mx-auto">
 					{json.map((element) => (
-						<>
+						<Fragment key={element._id + 'frag'}>
 							<div
 								key={element._id}
-								onClick={() => navigate(`${element._id}`)}
-								className="w-[0.9] rounded-md flex m-2 p-2 hover:bg-slate-400"
+								onClick={() => navigate(`/books/?author=${element._id}`)}
+								className="w-[0.9] rounded-md flex m-2 p-2 hover:bg-slate-400 transform transition duration-300 hover:scale-105"
 							>
 								<img
+									key={element._id + 'img'}
+									src={authorLogo}
 									alt={element.name}
 									className="flex-auto w-full max-w-24 border-r-0 m-2"
 								/>
-								<div className="flex flex-col w-full items-center">
+								<div
+									key={element._id + 'inDiv'}
+									className="flex flex-col w-full items-center"
+								>
 									<h2
 										key={element._id + ' h2'}
 										className="m-b-2 text-bold text-lg"
@@ -139,8 +211,12 @@ export default function DisplayMany() {
 										Date of Death: {element.date_of_death || 'NA'}
 									</p>
 								</div>
-								<div className="flex flex-col justify-center">
+								<div
+									key={element._id + 'btns'}
+									className="flex flex-col justify-center"
+								>
 									<button
+										key={element._id + 'update'}
 										onClick={(e) => {
 											navigate(`${element._id}/update`);
 											e.stopPropagation();
@@ -150,6 +226,7 @@ export default function DisplayMany() {
 										<BsFillPencilFill />
 									</button>
 									<button
+										key={element._id + 'delete'}
 										onClick={(e) => {
 											navigate(`${element._id}/delete`);
 											e.stopPropagation();
@@ -164,9 +241,10 @@ export default function DisplayMany() {
 								key={element._id + ' hr'}
 								className="w-11/12 text-zinc-800 mx-auto"
 							/>
-						</>
+						</Fragment>
 					))}
 				</div>
+				<Paginator />
 			</>
 		);
 	} else if (type === 'genres') {
@@ -185,15 +263,15 @@ export default function DisplayMany() {
 				>
 					Add a Genre
 				</button>
-				<div className="max-w-md mx-auto flex flex-col rounded-md items-center bg-slate-50">
+				<div className="max-w-md mx-auto flex flex-col rounded-md items-center bg-slate-50 my-5">
 					{json.map((element) => (
 						<div
 							key={element._id}
-							className="flex justify-around hover:bg-slate-400 rounded-full m-5 p-2 w-11/12"
+							onClick={() => navigate(`/books/?genre=${element._id}`)}
+							className="flex justify-around hover:bg-slate-400 rounded-full m-5 p-2 w-11/12 transform transition duration-300 hover:scale-105"
 						>
 							<div
 								key={element._id + ' inDiv'}
-								onClick={() => navigate(`${element._id}`)}
 								className="rounded-full m-5 p-2 w-3/4 "
 							>
 								<h2
@@ -203,8 +281,12 @@ export default function DisplayMany() {
 									{element.name}
 								</h2>
 							</div>
-							<div className="flex flex-col justify-center">
+							<div
+								key={element._id + 'btns'}
+								className="flex flex-col justify-center"
+							>
 								<button
+									key={element._id + 'update'}
 									onClick={(e) => {
 										navigate(`${element._id}/update`);
 										e.stopPropagation();
@@ -214,6 +296,7 @@ export default function DisplayMany() {
 									<BsFillPencilFill />
 								</button>
 								<button
+									key={element._id + 'delete'}
 									onClick={(e) => {
 										navigate(`${element._id}/delete`);
 										e.stopPropagation();
@@ -226,6 +309,7 @@ export default function DisplayMany() {
 						</div>
 					))}
 				</div>
+				<Paginator />
 			</>
 		);
 	} else if (type === 'bookinstances') {
@@ -233,8 +317,15 @@ export default function DisplayMany() {
 			return <div>Error occurred: {error.message}</div>;
 		}
 
-		if (!json) {
+		if (!json || !json.every((item) => item.book)) {
 			return <div>Loading...</div>;
+		}
+		if (!json.length) {
+			return (
+				<div className="max-w-[60%] min-w-[50%] bg-slate-100 rounded-md p-10 my-auto mx-auto text-center text-xl font-mono">
+					No Book Instances Found
+				</div>
+			);
 		}
 		return (
 			<>
@@ -244,15 +335,16 @@ export default function DisplayMany() {
 				>
 					Add Another Book Instance
 				</button>
-				<div className="max-w-full bg-slate-100 rounded-md p-2 m-2">
+				<div className="max-w-[90%] min-w-[80%] bg-slate-100 rounded-md p-2 my-2 mx-auto">
 					{json.map((element) => (
-						<>
+						<Fragment key={element._id + 'frag'}>
 							<div
 								key={element._id}
 								onClick={() => navigate(`${element._id}`)}
-								className="rounded-md flex m-2 p-2 hover:bg-slate-400"
+								className="rounded-md flex m-2 p-2 hover:bg-slate-400 transform transition duration-300 hover:scale-105"
 							>
 								<img
+									src={bookLogo}
 									className="flex-none w-full max-w-24 border-r-0 m-2"
 									key={element._id + ' img'}
 									alt={element.book.title}
@@ -300,12 +392,66 @@ export default function DisplayMany() {
 								className="w-11/12 text-zinc-800 mx-auto"
 								key={element._id + ' hr'}
 							/>
-						</>
+						</Fragment>
 					))}
 				</div>
+				<Paginator />
 			</>
 		);
 	} else {
 		return <NoPage />;
+	}
+
+	function Paginator() {
+		const pages = [];
+		for (let i = 1; i <= totalPages.current; i++) {
+			pages.push(
+				<li key={'pg' + i}>
+					<button
+						key={'pg' + i + 'btn'}
+						onClick={() => {
+							if (i !== page) setPage(i);
+						}}
+						className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+					>
+						{i}
+					</button>
+				</li>
+			);
+		}
+
+		return (
+			<nav className="mx-auto my-5">
+				<ul className="flex items-center -space-x-px h-10 text-base">
+					<li>
+						<button
+							onClick={() =>
+								setPage((prevPage) => {
+									if (prevPage > 1) prevPage--;
+									return prevPage;
+								})
+							}
+							className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+						>
+							<FaChevronLeft />
+						</button>
+					</li>
+					{pages}
+					<li>
+						<button
+							onClick={() =>
+								setPage((prevPage) => {
+									if (prevPage < totalPages.current) prevPage++;
+									return prevPage;
+								})
+							}
+							className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+						>
+							<FaChevronRight />
+						</button>
+					</li>
+				</ul>
+			</nav>
+		);
 	}
 }

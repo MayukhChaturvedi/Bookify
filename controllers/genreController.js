@@ -2,6 +2,11 @@ const Genre = require('../models/genre');
 const Book = require('../models/book');
 const asyncHandler = require('express-async-handler');
 
+exports.genre_count = asyncHandler(async (req, res, next) => {
+	const count = await Genre.countDocuments({});
+	res.json(count);
+});
+
 exports.genre_list = asyncHandler(async (req, res, next) => {
 	const allGenres = await Genre.find().sort({ name: 1 });
 	res.json(allGenres);

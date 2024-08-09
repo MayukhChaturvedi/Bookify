@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import GetItem from './getItem';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import NoPage from './noPage';
+import bookLogo from '../assets/book.jpg';
+import authorLogo from '../assets/author.jpg';
 import { BsFillPencilFill, BsFillTrash3Fill } from 'react-icons/bs';
-import { useNavigate } from 'react-router-dom';
 
 export default function DisplayOne() {
 	const [json, setJson] = useState(null);
@@ -46,6 +47,7 @@ export default function DisplayOne() {
 				className="max-w-full bg-slate-100 rounded-md m-5 p-5 flex"
 			>
 				<img
+					src={bookLogo}
 					key={json._id + ' img'}
 					className="flex-auto w-full max-w-24 border-r-0 m-2"
 					alt={json.title}
@@ -110,11 +112,15 @@ export default function DisplayOne() {
 		return (
 			<div className="max-w-full bg-slate-100 rounded-md m-5 p-5 flex">
 				<img
+					src={authorLogo}
 					alt={json.name}
 					className="flex-auto w-full max-w-24 border-r-0 m-2"
 				/>
 				<div key={json._id} className="flex flex-col w-full items-center">
-					<h2 key={json._id + ' h2'} className="m-b-2 text-bold text-3xl">
+					<h2
+						key={json._id + ' h2'}
+						className="m-b-2 text-bold text-3xl underline"
+					>
 						{json.name}
 					</h2>
 					<p key={json._id + ' p'} className="max-h-30 w-3/4">
@@ -149,8 +155,13 @@ export default function DisplayOne() {
 		}
 
 		return (
-			<div key={json._id} className="genre">
-				<h2 key={json._id + ' h2'}>{json.name}</h2>
+			<div
+				key={json._id}
+				className="bg-slate-100 rounded-md m-5 p-5 flex items-center justify-center"
+			>
+				<h2 className="m-6 text-3xl underline font-bold" key={json._id + ' h2'}>
+					{json.name}
+				</h2>
 				<div className="flex flex-col justify-evenly">
 					<button
 						onClick={() => navigate('update')}
@@ -179,6 +190,7 @@ export default function DisplayOne() {
 		return (
 			<div className="max-w-full bg-slate-100 rounded-md m-5 p-5 flex">
 				<img
+					src={bookLogo}
 					className="flex-auto w-full max-w-24 border-r-0 m-2"
 					key={json._id + ' img'}
 					alt={json.book.title}

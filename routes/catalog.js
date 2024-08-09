@@ -8,6 +8,8 @@ const bookInstanceController = require('../controllers/bookInstanceController');
 
 router.post('/books/create', bookController.book_create_post);
 
+router.get('/books/count', bookController.book_count);
+
 router.delete('/books/:id/delete', bookController.book_delete_delete);
 
 router.put('/books/:id/update', bookController.book_update_put);
@@ -17,6 +19,8 @@ router.get('/books', bookController.book_list);
 
 router.post('/authors/create', authorController.author_create_post);
 
+router.get('/authors/count', authorController.author_count);
+
 router.delete('/authors/:id/delete', authorController.author_delete_delete);
 
 router.put('/authors/:id/update', authorController.author_update_put);
@@ -25,6 +29,8 @@ router.get('/authors/:id', authorController.author_display);
 router.get('/authors', authorController.author_list);
 
 router.post('/genres/create', genreController.genre_create_post);
+
+router.get('/genres/count', genreController.genre_count);
 
 router.delete('/genres/:id/delete', genreController.genre_delete_delete);
 
@@ -37,6 +43,8 @@ router.post(
 	'/bookinstances/create',
 	bookInstanceController.bookinstance_create_post
 );
+
+router.get('/bookinstances/count', bookInstanceController.bookInstance_count);
 
 router.delete(
 	'/bookinstances/:id/delete',

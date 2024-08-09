@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { FaAsterisk } from 'react-icons/fa6';
 
 export default function FormGenerate({
 	type,
@@ -12,11 +13,16 @@ export default function FormGenerate({
 		return (
 			<>
 				<div className="m-3">
-					<label htmlFor="first_name">Enter first name:</label>
+					<label className="flex" htmlFor="first_name">
+						Enter first name
+						<span className="text-red-600 scale-75">
+							<FaAsterisk />
+						</span>
+					</label>
 					<input
 						autoFocus
 						type="text"
-						className="mx-2 border-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl"
 						onChange={(e) => handleChange(e.target.name, e.target.value, true)}
 						name="first_name"
 						value={data.required.first_name || ''}
@@ -25,10 +31,15 @@ export default function FormGenerate({
 					/>
 				</div>
 				<div className="m-3">
-					<label htmlFor="family_name">Enter family name:</label>
+					<label className="flex" htmlFor="family_name">
+						Enter family name
+						<span className="text-red-600 scale-75">
+							<FaAsterisk />
+						</span>
+					</label>
 					<input
 						type="text"
-						className="mx-2 border-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl"
 						onChange={(e) => handleChange(e.target.name, e.target.value, true)}
 						name="family_name"
 						value={data.required.family_name || ''}
@@ -37,10 +48,10 @@ export default function FormGenerate({
 					/>
 				</div>
 				<div className="m-3">
-					<label>Enter date of birth (Optional):</label>
+					<label className="block">Enter date of birth</label>
 					<input
 						type="date"
-						className="mx-2 border-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl"
 						onChange={(e) => handleChange(e.target.name, e.target.value)}
 						name="date_of_birth"
 						max={data.date_of_death || new Date().toISOString().split('T')[0]}
@@ -49,10 +60,10 @@ export default function FormGenerate({
 					/>
 				</div>
 				<div className="m-3">
-					<label>Enter date of death (Optional):</label>
+					<label className="block">Enter date of death</label>
 					<input
 						type="date"
-						className="mx-2 border-2 border-neutral-400 rounded-xl"
+						className=" border-2 border-neutral-400 rounded-xl"
 						onChange={(e) => handleChange(e.target.name, e.target.value)}
 						name="date_of_death"
 						min={data.date_of_birth || ''}
@@ -66,11 +77,16 @@ export default function FormGenerate({
 	} else if (type === 'genres') {
 		return (
 			<div className="my-10">
-				<label htmlFor="name">Enter Name: </label>
+				<label className="flex" htmlFor="name">
+					Enter Name
+					<span className="text-red-600 scale-75">
+						<FaAsterisk />
+					</span>
+				</label>
 				<input
 					autoFocus
 					type="text"
-					className="mx-2 border-2 border-neutral-400 rounded-xl"
+					className="border-2 border-neutral-400 rounded-xl"
 					value={data.required?.name || ''}
 					name="name"
 					readOnly={status === 'submitting'}
@@ -88,7 +104,7 @@ export default function FormGenerate({
 			<div key={element._id}>
 				<input
 					type="checkbox"
-					className="mx-2 border-2 border-neutral-400 rounded-xl"
+					className="border-2 border-neutral-400 rounded-xl"
 					id={element._id}
 					name="genre"
 					value={element._id}
@@ -101,10 +117,15 @@ export default function FormGenerate({
 		return (
 			<>
 				<div className="m-3">
-					<label htmlFor="title">Enter Title: </label>
+					<label className="flex" htmlFor="title">
+						Enter Title
+						<span className="text-red-600 scale-75">
+							<FaAsterisk />
+						</span>
+					</label>
 					<input
 						autoFocus
-						className="mx-2 border-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl"
 						type="text"
 						value={data.required.title || ''}
 						name="title"
@@ -114,20 +135,30 @@ export default function FormGenerate({
 					/>
 				</div>
 				<div className="m-3">
-					<label htmlFor="summary">Enter Summary: </label>
+					<label className="flex" htmlFor="summary">
+						Enter Summary
+						<span className="text-red-600 scale-75">
+							<FaAsterisk />
+						</span>
+					</label>
 					<textarea
 						value={data.required.summary || ''}
 						name="summary"
-						className="border-2 mx-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl"
 						required
 						readOnly={status === 'submitting'}
 						onChange={(e) => handleChange(e.target.name, e.target.value, true)}
 					/>
 				</div>
 				<div className="m-3">
-					<label htmlFor="isbn">Enter ISBN:</label>
+					<label className="flex" htmlFor="isbn">
+						Enter ISBN
+						<span className="text-red-600 scale-75">
+							<FaAsterisk />
+						</span>
+					</label>
 					<input
-						className="border-2 mx-2 border-neutral-400 rounded-xl font-sans font-normal"
+						className="border-2 border-neutral-400 rounded-xl font-sans font-normal"
 						type="number"
 						value={data.required.isbn || ''}
 						name="isbn"
@@ -137,10 +168,15 @@ export default function FormGenerate({
 					/>
 				</div>
 				<div className="m-3">
-					<label htmlFor="author">Enter Author: </label>
+					<label className="flex" htmlFor="author">
+						Enter Author
+						<span className="text-red-600 scale-75">
+							<FaAsterisk />
+						</span>
+					</label>
 					<select
 						name="author"
-						className="border-2 mx-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl"
 						required
 						onChange={(e) => handleChange(e.target.name, e.target.value, true)}
 						value={data.required.author || ''}
@@ -151,7 +187,7 @@ export default function FormGenerate({
 				</div>
 				<div className="m-3">
 					<fieldset>
-						<legend className="mb-2">Select all applicable Genres:</legend>
+						<legend className="mb-2">Select all applicable Genres</legend>
 						{genreOptions}
 					</fieldset>
 				</div>
@@ -165,11 +201,16 @@ export default function FormGenerate({
 		));
 		return (
 			<>
-				<div className="m-3">
-					<label htmlFor="book">Select Book:</label>
+				<div className="m-3 max-w-[50%]">
+					<label className="flex" htmlFor="book">
+						Select Book
+						<span className="text-red-600 scale-75">
+							<FaAsterisk />
+						</span>
+					</label>
 					<select
 						autoFocus
-						className="mx-2 border-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl max-w-full"
 						name="book"
 						value={data.required.book || ''}
 						required
@@ -180,9 +221,14 @@ export default function FormGenerate({
 					</select>
 				</div>
 				<div className="m-3">
-					<label htmlFor="imprint">Enter Imprint:</label>
+					<label className="flex" htmlFor="imprint">
+						Enter Imprint
+						<span className="text-red-600 scale-75">
+							<FaAsterisk />
+						</span>
+					</label>
 					<input
-						className="mx-2 border-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl"
 						type="text"
 						value={data.required.imprint || ''}
 						name="imprint"
@@ -192,10 +238,15 @@ export default function FormGenerate({
 					/>
 				</div>
 				<div className="m-3">
-					<label htmlFor="status">Select BookInstance Status:</label>
+					<label className="flex" htmlFor="status">
+						Select Status
+						<span className="text-red-600 scale-75">
+							<FaAsterisk />
+						</span>
+					</label>
 					<select
 						name="status"
-						className="mx-2 border-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl"
 						value={data.required.status || ''}
 						required
 						onChange={(e) => handleChange(e.target.name, e.target.value, true)}
@@ -212,10 +263,10 @@ export default function FormGenerate({
 					</select>
 				</div>
 				<div className="m-3">
-					<label>Enter Due Back Date(Optional):</label>
+					<label className="block">Enter Due Back Date</label>
 					<input
 						type="date"
-						className="mx-2 border-2 border-neutral-400 rounded-xl"
+						className="border-2 border-neutral-400 rounded-xl"
 						value={data.due_back}
 						name="due_back"
 						onChange={(e) => handleChange(e.target.name, e.target.value)}

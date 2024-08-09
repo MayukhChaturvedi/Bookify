@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import getItem from './getItem';
 import axios from 'axios';
 import FormGenerate from './formGenerate';
@@ -15,6 +16,7 @@ export default function Create() {
 		books: [],
 	});
 	const { type } = useParams();
+	const { enqueueSnackbar } = useSnackbar();
 
 	useEffect(() => {
 		const asyncGet = async (getType) => {
@@ -84,7 +86,7 @@ export default function Create() {
 
 	return (
 		<form
-			className="rounded-xl font-serif text-lg font-light bg-slate-50 my-5 mx-auto p-5 min-w-fit max-w-prose flex flex-col items-center"
+			className="rounded-xl font-serif text-lg font-light bg-slate-50 my-5 mx-auto px-20 py-10 flex flex-col items-center"
 			onSubmit={(e) => handleSubmit(e)}
 		>
 			<FormGenerate
@@ -101,8 +103,6 @@ export default function Create() {
 			>
 				Submit
 			</button>
-			<h3 id="submitMessage"></h3>
-			<h3 id="submitError" className="text-red-600"></h3>
 		</form>
 	);
 
@@ -159,8 +159,6 @@ export default function Create() {
 				delete postData.due_back;
 			}
 		}
-		const submitError = document.getElementById('submitError');
-		submitError.innerText = '';
 		if (status === 'complete') {
 			if (check(type, postData)) {
 				setStatus('submitting');
@@ -168,29 +166,42 @@ export default function Create() {
 				axios
 					.post(`http://localhost:3000/catalog/${type}/create`, postData)
 					.then(function (res) {
-						alert(res.data);
+						enqueueSnackbar(res.data);
 					})
 					.catch(function (err) {
-						alert('Error encountered. Check console for details');
+						enqueueSnackbar('Error encountered. Check console for details', {
+							variant: 'error',
+						});
 						console.error('Error encountered during POST request', err);
 					});
 			}
 		} else {
-			submitError.innerText =
-				'Please fill all required fields before submitting';
+			enqueueSnackbar('Please fill all required fields before submitting', {
+				variant: 'warning',
+			});
 		}
 	}
 
 	function check(type, postData) {
-		const submitMessage = document.getElementById('submitMessage');
-		const submitError = document.getElementById('submitError');
 		if (type === 'authors') {
-			if (!/[A-Za-z]{,100}/.test(postData.first_name)) {
-				submitError.innerText = 'First Name should have 3 or more letters';
+			if (!/[A-Za-z]{1,100}/.test(postData.first_name)) {
+				console.log(`${postData.first_name} invalid first name`);
+				enqueueSnackbar(
+					'First Name should only have uppercase or lowercase letters with a max length of 100',
+					{
+						variant: 'warning',
+					}
+				);
 				return false;
 			}
-			if (!/[A-Za-z]{,100}/.test(postData.family_name)) {
-				submitError.innerText = 'Family Name should have 3 or more letters';
+			if (!/[A-Za-z]{1,100}/.test(postData.family_name)) {
+				console.log(`${postData.family_name} invalid family name`);
+				enqueueSnackbar(
+					'Family Name should only have uppercase or lowercase letters with a max length of 100',
+					{
+						variant: 'warning',
+					}
+				);
 				return false;
 			}
 			if (
@@ -198,18 +209,20 @@ export default function Create() {
 				postData.date_of_death &&
 				!(postData.date_of_birth >= postData.date_of_death)
 			) {
-				submitError.innerText =
-					'Date of Death should not be before Date of Birth';
+				enqueueSnackbar('Date of Death should not be before Date of Birth', {
+					variant: 'warning',
+				});
 				return false;
 			}
 		} else if (type === 'genres') {
 			if (postData.name.length < 3 || postData.name.length > 100) {
-				submitError.innerText =
-					'Genre name should be between 3 and 100 characters';
+				enqueueSnackbar('Genre name should be between 3 and 100 characters', {
+					variant: 'warning',
+				});
 				return false;
 			}
 		}
-		submitMessage.innerText = 'Submitting...';
+		enqueueSnackbar('Submitting...');
 		return true;
 	}
 }
