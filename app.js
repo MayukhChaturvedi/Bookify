@@ -6,6 +6,8 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const compression = require("compression");
+const helmet = require("helmet");
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
@@ -22,6 +24,9 @@ const app = express();
 app.use("/users", limiter);
 
 app.use(cors());
+
+app.use(compression());
+app.use(helmet());
 
 const mongoose = require("mongoose");
 
