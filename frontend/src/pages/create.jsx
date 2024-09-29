@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
-import getItem from './getItem';
-import axios from 'axios';
-import FormGenerate from './formGenerate';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useSnackbar } from "notistack";
+import getItem from "./getItem";
+import api from "../services/api";
+import FormGenerate from "./formGenerate";
 
 export default function Create() {
 	const [data, setData] = useState({
 		required: {},
 	});
-	const [status, setStatus] = useState('working');
+	const [status, setStatus] = useState("working");
 	const [extraData, setExtraData] = useState({
 		authors: [],
 		genres: [],
@@ -21,52 +21,52 @@ export default function Create() {
 	useEffect(() => {
 		const asyncGet = async (getType) => {
 			try {
-				const item = await getItem('multiple', getType);
+				const item = await getItem("multiple", getType);
 				setExtraData((prevData) => ({ ...prevData, [getType]: item }));
 			} catch (e) {
 				console.error(`Error fetching get data error:`, e);
 			}
 		};
 		switch (type) {
-			case 'authors':
+			case "authors":
 				setData({
 					required: {
-						first_name: '',
-						family_name: '',
+						first_name: "",
+						family_name: "",
 					},
-					date_of_birth: '',
-					date_of_death: '',
+					date_of_birth: "",
+					date_of_death: "",
 				});
 				break;
-			case 'genres':
+			case "genres":
 				setData({
 					required: {
-						name: '',
+						name: "",
 					},
 				});
 				break;
-			case 'books':
-				asyncGet('authors');
-				asyncGet('genres');
+			case "books":
+				asyncGet("authors");
+				asyncGet("genres");
 				setData({
 					required: {
-						title: '',
-						summary: '',
-						isbn: '',
-						author: '',
+						title: "",
+						summary: "",
+						isbn: "",
+						author: "",
 					},
 					genre: [],
 				});
 				break;
-			case 'bookinstances':
-				asyncGet('books');
+			case "bookinstances":
+				asyncGet("books");
 				setData({
 					required: {
-						book: '',
-						imprint: '',
-						status: '',
+						book: "",
+						imprint: "",
+						status: "",
 					},
-					due_back: '',
+					due_back: "",
 				});
 				break;
 			default:
@@ -75,18 +75,18 @@ export default function Create() {
 	}, [type]);
 
 	if (
-		type === 'books' &&
-		(!extraData['authors'].length || !extraData['genres'].length)
+		type === "books" &&
+		(!extraData["authors"].length || !extraData["genres"].length)
 	) {
 		return <div>Loading...</div>;
 	}
-	if (type === 'bookinstances' && !extraData['books'].length) {
+	if (type === "bookinstances" && !extraData["books"].length) {
 		return <div>Loading...</div>;
 	}
 
 	return (
 		<form
-			className="rounded-xl font-serif text-lg font-light bg-slate-50 my-5 mx-auto px-20 py-10 flex flex-col items-center"
+			className="rounded-xl font-serif text-lg font-light bg-slate-50 my-5 mx-auto sm:px-5 sm:py-5 md:px-10 md:py-7 lg:px-20 lg:py-10 flex flex-col items-center w-full max-w-lg"
 			onSubmit={(e) => handleSubmit(e)}
 		>
 			<FormGenerate
@@ -99,7 +99,7 @@ export default function Create() {
 			/>
 			<button
 				type="submit"
-				className="rounded-full border-2 py-2 px-4 bg-green-500 text-slate-50 m-4"
+				className="rounded-full border-2 py-2 px-4 bg-green-500 text-slate-50 m-4 w-full sm:w-auto"
 			>
 				Submit
 			</button>
@@ -115,7 +115,7 @@ export default function Create() {
 				newData[name] = value;
 			}
 			if (Object.values(newData.required).every((val) => val)) {
-				setStatus('complete');
+				setStatus("complete");
 			}
 			return newData;
 		});
@@ -136,11 +136,11 @@ export default function Create() {
 		const postData = { ...data, ...data.required };
 		delete postData.required;
 		for (const key in postData) {
-			if (typeof postData[key] === 'string') {
+			if (typeof postData[key] === "string") {
 				postData[key] = postData[key].trim();
 			}
 		}
-		if (type === 'authors') {
+		if (type === "authors") {
 			if (data.date_of_birth) {
 				postData.date_of_birth = new Date(data.date_of_birth);
 			} else {
@@ -152,44 +152,44 @@ export default function Create() {
 				delete postData.date_of_death;
 			}
 			console.log(postData);
-		} else if (type === 'bookinstances') {
+		} else if (type === "bookinstances") {
 			if (data.due_back) {
 				postData.due_back = new Date(data.due_back);
 			} else {
 				delete postData.due_back;
 			}
 		}
-		if (status === 'complete') {
+		if (status === "complete") {
 			if (check(type, postData)) {
-				setStatus('submitting');
+				setStatus("submitting");
 
-				axios
-					.post(`http://localhost:3000/catalog/${type}/create`, postData)
+				api
+					.post(`/catalog/${type}/create`, postData)
 					.then(function (res) {
 						enqueueSnackbar(res.data);
 					})
 					.catch(function (err) {
-						enqueueSnackbar('Error encountered. Check console for details', {
-							variant: 'error',
+						enqueueSnackbar("Error encountered. Check console for details", {
+							variant: "error",
 						});
-						console.error('Error encountered during POST request', err);
+						console.error("Error encountered during POST request", err);
 					});
 			}
 		} else {
-			enqueueSnackbar('Please fill all required fields before submitting', {
-				variant: 'warning',
+			enqueueSnackbar("Please fill all required fields before submitting", {
+				variant: "warning",
 			});
 		}
 	}
 
 	function check(type, postData) {
-		if (type === 'authors') {
+		if (type === "authors") {
 			if (!/[A-Za-z]{1,100}/.test(postData.first_name)) {
 				console.log(`${postData.first_name} invalid first name`);
 				enqueueSnackbar(
-					'First Name should only have uppercase or lowercase letters with a max length of 100',
+					"First Name should only have uppercase or lowercase letters with a max length of 100",
 					{
-						variant: 'warning',
+						variant: "warning",
 					}
 				);
 				return false;
@@ -197,9 +197,9 @@ export default function Create() {
 			if (!/[A-Za-z]{1,100}/.test(postData.family_name)) {
 				console.log(`${postData.family_name} invalid family name`);
 				enqueueSnackbar(
-					'Family Name should only have uppercase or lowercase letters with a max length of 100',
+					"Family Name should only have uppercase or lowercase letters with a max length of 100",
 					{
-						variant: 'warning',
+						variant: "warning",
 					}
 				);
 				return false;
@@ -209,20 +209,20 @@ export default function Create() {
 				postData.date_of_death &&
 				!(postData.date_of_birth >= postData.date_of_death)
 			) {
-				enqueueSnackbar('Date of Death should not be before Date of Birth', {
-					variant: 'warning',
+				enqueueSnackbar("Date of Death should not be before Date of Birth", {
+					variant: "warning",
 				});
 				return false;
 			}
-		} else if (type === 'genres') {
+		} else if (type === "genres") {
 			if (postData.name.length < 3 || postData.name.length > 100) {
-				enqueueSnackbar('Genre name should be between 3 and 100 characters', {
-					variant: 'warning',
+				enqueueSnackbar("Genre name should be between 3 and 100 characters", {
+					variant: "warning",
 				});
 				return false;
 			}
 		}
-		enqueueSnackbar('Submitting...');
+		enqueueSnackbar("Submitting...");
 		return true;
 	}
 }

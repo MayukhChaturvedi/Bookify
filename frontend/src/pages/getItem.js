@@ -1,19 +1,19 @@
-import axios from 'axios';
+import api from "../services/api";
 
 export default async function GetItem(idOrQty, type, page, filter) {
-	console.log('Getting Item');
+	console.log("Getting Item");
 	try {
 		let url;
-		if (idOrQty === 'multiple') {
-			url = `http://localhost:3000/catalog/${type}/?skip=${page}&${filter}`;
+		if (idOrQty === "multiple") {
+			url = `/catalog/${type}/?skip=${page}&${filter}`;
 		} else {
-			url = `http://localhost:3000/catalog/${type}/${idOrQty}`;
+			url = `/catalog/${type}/${idOrQty}`;
 		}
-		const response = await axios.get(url);
+		const response = await api.get(url);
 		console.log(response.data);
 		return response.data;
 	} catch (error) {
-		console.error('Error occurred:', error);
+		console.error("Error occurred:", error);
 		throw error;
 	}
 }

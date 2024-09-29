@@ -1,5 +1,5 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../services/api";
 
 export default function Delete() {
 	const navigate = useNavigate();
@@ -10,13 +10,13 @@ export default function Delete() {
 			<div className="flex justify-around">
 				<button
 					className="rounded-full border-2 py-2 px-4 bg-green-500 text-slate-50 m-4"
-					onClick={() => handleClick('y')}
+					onClick={() => handleClick("y")}
 				>
 					Yes
 				</button>
 				<button
 					className="rounded-full border-2 py-2 px-4 bg-red-600 text-slate-50 m-4"
-					onClick={() => handleClick('n')}
+					onClick={() => handleClick("n")}
 				>
 					No
 				</button>
@@ -24,15 +24,15 @@ export default function Delete() {
 		</div>
 	);
 	function handleClick(option) {
-		if (option === 'y') {
-			axios
-				.delete(`http://localhost:3000/catalog/${type}/${id}/delete`)
+		if (option === "y") {
+			api
+				.delete(`/catalog/${type}/${id}/delete`)
 				.then(function (res) {
 					alert(res.data);
 					if (res.status === 200) navigate(`/${type}`);
 				})
 				.catch(function (err) {
-					alert('Error encountered. Please check console for more details');
+					alert("Error encountered. Please check console for more details");
 					console.log(err);
 				});
 		} else {

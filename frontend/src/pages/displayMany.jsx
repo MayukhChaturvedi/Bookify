@@ -1,16 +1,16 @@
-import { useState, useEffect, useRef, Fragment } from 'react';
-import GetItem from './getItem';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import NoPage from './noPage';
-import bookLogo from '../assets/book.jpg';
-import authorLogo from '../assets/author.jpg';
-import { BsFillPencilFill, BsFillTrash3Fill } from 'react-icons/bs';
-import axios from 'axios';
+import { useState, useEffect, useRef, Fragment } from "react";
+import GetItem from "./getItem";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import NoPage from "./noPage";
+import bookLogo from "../assets/book.jpg";
+import authorLogo from "../assets/author.jpg";
+import { BsFillPencilFill, BsFillTrash3Fill } from "react-icons/bs";
+import api from "../services/api";
 import {
 	FaChevronLeft,
 	FaChevronRight,
 	FaMagnifyingGlass,
-} from 'react-icons/fa6';
+} from "react-icons/fa6";
 
 export default function DisplayMany() {
 	const [json, setJson] = useState(null);
@@ -21,28 +21,26 @@ export default function DisplayMany() {
 
 	const navigate = useNavigate();
 	const { type } = useParams();
-	const authorId = searchParams.get('author') || '';
-	const genreId = searchParams.get('genre') || '';
-	const bookId = searchParams.get('book') || '';
-	let filter = '';
+	const authorId = searchParams.get("author") || "";
+	const genreId = searchParams.get("genre") || "";
+	const bookId = searchParams.get("book") || "";
+	let filter = "";
 	if (authorId) {
-		filter += 'author=' + authorId;
+		filter += "author=" + authorId;
 	}
 	if (genreId) {
-		filter += 'genre=' + genreId;
+		filter += "genre=" + genreId;
 	}
 	if (bookId) {
-		filter += 'book=' + bookId;
+		filter += "book=" + bookId;
 	}
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const res = await axios.get(
-					`http://localhost:3000/catalog/${type}/count/?${filter}`
-				);
+				const res = await api.get(`/catalog/${type}/count/?${filter}`);
 				totalPages.current = Math.ceil(res.data / 10);
-				const data = await GetItem('multiple', type, page, filter);
+				const data = await GetItem("multiple", type, page, filter);
 				setJson(data);
 			} catch (err) {
 				setError(err);
@@ -50,18 +48,17 @@ export default function DisplayMany() {
 		};
 
 		if (
-			type === 'books' ||
-			type === 'genres' ||
-			type === 'authors' ||
-			type === 'bookinstances'
+			type === "books" ||
+			type === "genres" ||
+			type === "authors" ||
+			type === "bookinstances"
 		)
 			fetchData();
 	}, [type, page, filter]);
-
-	if (type === 'books') {
+	if (type === "books") {
 		if (error) {
 			return (
-				<div className="max-w-[60%] min-w-[50%] bg-slate-100 rounded-md p-10 my-auto mx-auto text-center text-xl font-mono">
+				<div className="max-w-full sm:max-w-[60%] bg-slate-100 rounded-md p-4 sm:p-10 my-4 sm:my-auto mx-auto text-center text-xl font-mono">
 					Error occurred: {error.message}
 				</div>
 			);
@@ -69,7 +66,7 @@ export default function DisplayMany() {
 
 		if (!json) {
 			return (
-				<div className="max-w-[60%] min-w-[50%] bg-slate-100 rounded-md p-10 my-auto mx-auto text-center text-xl font-mono">
+				<div className="max-w-full sm:max-w-[60%] bg-slate-100 rounded-md p-4 sm:p-10 my-4 sm:my-auto mx-auto text-center text-xl font-mono">
 					Loading...
 				</div>
 			);
@@ -77,7 +74,7 @@ export default function DisplayMany() {
 
 		if (!json.length) {
 			return (
-				<div className="max-w-[60%] min-w-[50%] bg-slate-100 rounded-md p-10 my-auto mx-auto text-center text-xl font-mono">
+				<div className="max-w-full sm:max-w-[60%] bg-slate-100 rounded-md p-4 sm:p-10 my-4 sm:my-auto mx-auto text-center text-xl font-mono">
 					No Books Found
 				</div>
 			);
@@ -86,77 +83,80 @@ export default function DisplayMany() {
 		return (
 			<>
 				<button
-					onClick={() => navigate('create')}
-					className="block max-w-fit mx-auto my-3 py-4 px-5 bg-green-500 text-white text-lg font-semibold rounded-full"
+					onClick={() => navigate("create")}
+					className="block max-w-fit mx-auto my-3 py-3 px-5 bg-green-500 text-white text-sm sm:text-lg font-semibold rounded-full"
 				>
 					Add a Book
 				</button>
-				<div className="max-w-[90%] min-w-[80%] bg-slate-100 rounded-md p-2 my-2 mx-auto">
+				<div className="max-w-[90%] sm:max-w-[80%] bg-slate-100 rounded-md p-2 my-2 mx-auto">
 					{json.map((element) => (
-						<Fragment key={element._id + 'frag'}>
+						<Fragment key={element._id + "frag"}>
 							<div
 								key={element._id}
 								onClick={() => navigate(`${element._id}`)}
-								className="rounded-md flex m-2 p-2 hover:bg-slate-400 transform transition duration-300 hover:scale-105"
+								className="rounded-md flex flex-wrap sm:flex-nowrap m-2 p-2 hover:bg-slate-400 transform transition duration-300 hover:scale-105"
 							>
 								<img
-									key={element._id + 'img'}
+									key={element._id + "img"}
 									src={bookLogo}
-									className="flex-none w-full max-w-24 border-r-0 m-2"
+									className="flex-none w-full sm:w-24 object-contain border-r-0 m-2"
 									alt={element.title}
 								/>
 								<div
-									key={element._id + 'inDiv'}
-									className="flex flex-col w-full items-center"
+									key={element._id + "inDiv"}
+									className="flex flex-col w-full items-center sm:items-start"
 								>
 									<h2
-										key={element._id + ' h2'}
-										className="m-b-2 font-bold text-lg"
+										key={element._id + " h2"}
+										className="font-bold text-base sm:text-lg"
 									>
 										{element.title}
 									</h2>
-									<p key={element._id + ' p'} className="w-3/4">
+									<p
+										key={element._id + " p"}
+										className="w-3/4 text-sm sm:text-base"
+									>
 										{element.summary}
 									</p>
 								</div>
 								<div
-									key={element._id + 'btns'}
+									key={element._id + "btns"}
 									className="flex flex-col justify-center"
 								>
 									<button
-										key={element._id + 'update'}
+										key={element._id + "update"}
 										onClick={(e) => {
 											navigate(`${element._id}/update`);
 											e.stopPropagation();
 										}}
-										className="m-3 hover:text-orange-500"
+										className="m-2 hover:text-orange-500"
 									>
 										<BsFillPencilFill />
 									</button>
 									<button
-										key={element._id + 'delete'}
+										key={element._id + "delete"}
 										onClick={(e) => {
 											navigate(`${element._id}/delete`);
 											e.stopPropagation();
 										}}
-										className="m-3 hover:text-orange-500"
+										className="m-2 hover:text-orange-500"
 									>
 										<BsFillTrash3Fill />
 									</button>
 									<button
-										key={element._id + 'search'}
+										key={element._id + "search"}
 										onClick={(e) => {
 											navigate(`/bookinstances/?book=${element._id}`);
 											e.stopPropagation();
 										}}
-										className="m-3 hover:text-orange-500"
+										className="m-2 hover:text-orange-500"
 									>
 										<FaMagnifyingGlass />
 									</button>
 								</div>
 							</div>
 							<hr
-								key={element._id + 'hr'}
+								key={element._id + "hr"}
 								className="w-11/12 text-zinc-800 mx-auto"
 							/>
 						</Fragment>
@@ -165,58 +165,66 @@ export default function DisplayMany() {
 				<Paginator />
 			</>
 		);
-	} else if (type === 'authors') {
+	} else if (type === "authors") {
 		if (error) {
-			return <div>Error occurred: {error.message}</div>;
+			return (
+				<div className="max-w-full sm:max-w-[60%] bg-slate-100 rounded-md p-4 sm:p-10 my-4 sm:my-auto mx-auto text-center text-xl font-mono">
+					Error occurred: {error.message}
+				</div>
+			);
 		}
 
 		if (!json) {
-			return <div>Loading...</div>;
+			return (
+				<div className="max-w-full sm:max-w-[60%] bg-slate-100 rounded-md p-4 sm:p-10 my-4 sm:my-auto mx-auto text-center text-xl font-mono">
+					Loading...
+				</div>
+			);
 		}
 		return (
 			<>
 				<button
-					onClick={() => navigate('create')}
-					className="block max-w-fit mx-auto my-3 py-4 px-5 bg-green-500 text-white text-lg font-semibold rounded-full"
+					onClick={() => navigate("create")}
+					className="block max-w-fit mx-auto my-3 py-3 px-5 bg-green-500 text-white text-sm sm:text-lg font-semibold rounded-full"
 				>
 					Add an Author
 				</button>
 				<div className="max-w-[90%] min-w-[80%] bg-slate-100 rounded-md p-2 my-2 mx-auto">
 					{json.map((element) => (
-						<Fragment key={element._id + 'frag'}>
+						<Fragment key={element._id + "frag"}>
 							<div
 								key={element._id}
 								onClick={() => navigate(`/books/?author=${element._id}`)}
-								className="w-[0.9] rounded-md flex m-2 p-2 hover:bg-slate-400 transform transition duration-300 hover:scale-105"
+								className="rounded-md flex flex-wrap sm:flex-nowrap m-2 p-2 hover:bg-slate-400 transform transition duration-300 hover:scale-105"
 							>
 								<img
-									key={element._id + 'img'}
+									key={element._id + "img"}
 									src={authorLogo}
 									alt={element.name}
-									className="flex-auto w-full max-w-24 border-r-0 m-2"
+									className="flex-none w-full sm:w-24 object-contain border-r-0 m-2"
 								/>
 								<div
-									key={element._id + 'inDiv'}
-									className="flex flex-col w-full items-center"
+									key={element._id + "inDiv"}
+									className="flex flex-col w-full items-center sm:items-start"
 								>
 									<h2
-										key={element._id + ' h2'}
+										key={element._id + " h2"}
 										className="m-b-2 text-bold text-lg"
 									>
 										{element.name}
 									</h2>
-									<p key={element._id + ' p'} className="max-h-30 w-3/4">
-										Date of Birth: {element.date_of_birth || 'NA'}
+									<p key={element._id + " p"} className="max-h-30 w-3/4">
+										Date of Birth: {element.date_of_birth || "NA"}
 										<br />
-										Date of Death: {element.date_of_death || 'NA'}
+										Date of Death: {element.date_of_death || "NA"}
 									</p>
 								</div>
 								<div
-									key={element._id + 'btns'}
+									key={element._id + "btns"}
 									className="flex flex-col justify-center"
 								>
 									<button
-										key={element._id + 'update'}
+										key={element._id + "update"}
 										onClick={(e) => {
 											navigate(`${element._id}/update`);
 											e.stopPropagation();
@@ -226,7 +234,7 @@ export default function DisplayMany() {
 										<BsFillPencilFill />
 									</button>
 									<button
-										key={element._id + 'delete'}
+										key={element._id + "delete"}
 										onClick={(e) => {
 											navigate(`${element._id}/delete`);
 											e.stopPropagation();
@@ -238,7 +246,7 @@ export default function DisplayMany() {
 								</div>
 							</div>
 							<hr
-								key={element._id + ' hr'}
+								key={element._id + " hr"}
 								className="w-11/12 text-zinc-800 mx-auto"
 							/>
 						</Fragment>
@@ -247,19 +255,27 @@ export default function DisplayMany() {
 				<Paginator />
 			</>
 		);
-	} else if (type === 'genres') {
+	} else if (type === "genres") {
 		if (error) {
-			return <div>Error occurred: {error.message}</div>;
+			return (
+				<div className="max-w-full sm:max-w-[60%] bg-slate-100 rounded-md p-4 sm:p-10 my-4 sm:my-auto mx-auto text-center text-xl font-mono">
+					Error occurred: {error.message}
+				</div>
+			);
 		}
 
 		if (!json) {
-			return <div>Loading...</div>;
+			return (
+				<div className="max-w-full sm:max-w-[60%] bg-slate-100 rounded-md p-4 sm:p-10 my-4 sm:my-auto mx-auto text-center text-xl font-mono">
+					Loading...
+				</div>
+			);
 		}
 		return (
 			<>
 				<button
-					onClick={() => navigate('create')}
-					className="block mx-auto my-3 py-4 px-5 bg-green-500 text-white text-lg font-semibold rounded-full"
+					onClick={() => navigate("create")}
+					className="block max-w-fit mx-auto my-3 py-3 px-5 bg-green-500 text-white text-sm sm:text-lg font-semibold rounded-full"
 				>
 					Add a Genre
 				</button>
@@ -271,22 +287,22 @@ export default function DisplayMany() {
 							className="flex justify-around hover:bg-slate-400 rounded-full m-5 p-2 w-11/12 transform transition duration-300 hover:scale-105"
 						>
 							<div
-								key={element._id + ' inDiv'}
+								key={element._id + " inDiv"}
 								className="rounded-full m-5 p-2 w-3/4 "
 							>
 								<h2
-									key={element._id + ' h2'}
+									key={element._id + " h2"}
 									className="font-bold text-lg m-2 text-center"
 								>
 									{element.name}
 								</h2>
 							</div>
 							<div
-								key={element._id + 'btns'}
+								key={element._id + "btns"}
 								className="flex flex-col justify-center"
 							>
 								<button
-									key={element._id + 'update'}
+									key={element._id + "update"}
 									onClick={(e) => {
 										navigate(`${element._id}/update`);
 										e.stopPropagation();
@@ -296,7 +312,7 @@ export default function DisplayMany() {
 									<BsFillPencilFill />
 								</button>
 								<button
-									key={element._id + 'delete'}
+									key={element._id + "delete"}
 									onClick={(e) => {
 										navigate(`${element._id}/delete`);
 										e.stopPropagation();
@@ -312,13 +328,21 @@ export default function DisplayMany() {
 				<Paginator />
 			</>
 		);
-	} else if (type === 'bookinstances') {
+	} else if (type === "bookinstances") {
 		if (error) {
-			return <div>Error occurred: {error.message}</div>;
+			return (
+				<div className="max-w-full sm:max-w-[60%] bg-slate-100 rounded-md p-4 sm:p-10 my-4 sm:my-auto mx-auto text-center text-xl font-mono">
+					Error occurred: {error.message}
+				</div>
+			);
 		}
 
 		if (!json || !json.every((item) => item.book)) {
-			return <div>Loading...</div>;
+			return (
+				<div className="max-w-full sm:max-w-[60%] bg-slate-100 rounded-md p-4 sm:p-10 my-4 sm:my-auto mx-auto text-center text-xl font-mono">
+					Loading...
+				</div>
+			);
 		}
 		if (!json.length) {
 			return (
@@ -330,36 +354,36 @@ export default function DisplayMany() {
 		return (
 			<>
 				<button
-					onClick={() => navigate('create')}
-					className="block max-w-fit mx-auto my-3 py-4 px-5 bg-green-500 text-white text-lg font-semibold rounded-full"
+					onClick={() => navigate("create")}
+					className="block max-w-fit mx-auto my-3 py-3 px-5 bg-green-500 text-white text-sm sm:text-lg font-semibold rounded-full"
 				>
 					Add Another Book Instance
 				</button>
 				<div className="max-w-[90%] min-w-[80%] bg-slate-100 rounded-md p-2 my-2 mx-auto">
 					{json.map((element) => (
-						<Fragment key={element._id + 'frag'}>
+						<Fragment key={element._id + "frag"}>
 							<div
 								key={element._id}
 								onClick={() => navigate(`${element._id}`)}
-								className="rounded-md flex m-2 p-2 hover:bg-slate-400 transform transition duration-300 hover:scale-105"
+								className="rounded-md flex flex-wrap sm:flex-nowrap m-2 p-2 hover:bg-slate-400 transform transition duration-300 hover:scale-105"
 							>
 								<img
 									src={bookLogo}
-									className="flex-none w-full max-w-24 border-r-0 m-2"
-									key={element._id + ' img'}
+									className="flex-none w-full sm:w-24 object-contain border-r-0 m-2"
+									key={element._id + " img"}
 									alt={element.book.title}
 								/>
 								<div
-									key={element._id + ' inDiv'}
-									className="flex flex-col w-full items-center"
+									key={element._id + " inDiv"}
+									className="flex flex-col w-full items-center sm:items-start"
 								>
 									<h2
 										className="m-b-2 text-bold text-lg"
-										key={element._id + ' h2'}
+										key={element._id + " h2"}
 									>
 										{element.book.title}
 									</h2>
-									<p key={element._id + ' p'} className="w-3/4">
+									<p key={element._id + " p"} className="w-3/4">
 										Status: {element.status}
 										<br />
 										Imprint: {element.imprint}
@@ -390,7 +414,7 @@ export default function DisplayMany() {
 							</div>
 							<hr
 								className="w-11/12 text-zinc-800 mx-auto"
-								key={element._id + ' hr'}
+								key={element._id + " hr"}
 							/>
 						</Fragment>
 					))}
@@ -406,9 +430,9 @@ export default function DisplayMany() {
 		const pages = [];
 		for (let i = 1; i <= totalPages.current; i++) {
 			pages.push(
-				<li key={'pg' + i}>
+				<li key={"pg" + i}>
 					<button
-						key={'pg' + i + 'btn'}
+						key={"pg" + i + "btn"}
 						onClick={() => {
 							if (i !== page) setPage(i);
 						}}
