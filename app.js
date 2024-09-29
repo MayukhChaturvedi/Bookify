@@ -5,16 +5,22 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit");
+
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	limit: 100,
+	standardHeaders: "draft-7",
+	legacyHeaders: false,
+});
 
 const usersRouter = require("./routes/users");
 const catalogRouter = require("./routes/catalog");
 
 const app = express();
 
-// const corsOptions = {
-// 	origin: 'http://localhost:5173',
-// 	optionSuccessStatus: 200,
-// };
+app.use("/users", limiter);
+
 app.use(cors());
 
 const mongoose = require("mongoose");
